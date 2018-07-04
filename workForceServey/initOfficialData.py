@@ -4,9 +4,11 @@ Created on 2018年6月29日
 @author: so6370
 '''
 import xlrd
+import re
 
 monthlyEmployee_dict = {}
 insurance_data = {}
+all_samples = []
 
 def load_monthly_employee():
     for line in open('..\\..\\input\\106_MonthlyEmployee.txt', 'r', encoding = 'utf-8', errors = 'ignore'):
@@ -70,14 +72,14 @@ def load_insurance():
     for i in range(1, sheet.nrows):
         row = sheet.row_values(i)
         farm_id = row[0]
-        value = row[2]
+        value = int(row[2])
         add_insurance(farm_id, value, 2)
         
     sheet = wb.sheet_by_index(3)
     for i in range(1, sheet.nrows):
         row = sheet.row_values(i)
         farm_id = row[0]
-        value = row[2]
+        value = int(row[2])
         add_insurance(farm_id, value, 3)
 
 def add_insurance(k, v, i):
@@ -88,8 +90,25 @@ def add_insurance(k, v, i):
         value_list = [0] * 4
         value_list[i] = v
         insurance_data[k] = value_list
+
+def data_calssify():
+    samples_dict = load_samples()
+    
+    
+def load_samples():
+    samples_dict ={}
+    
+    for sample_data in open('..\\..\\input\\sample.txt', 'r', encoding = 'utf-8', errors = 'ignore'):
+        sample_list = sample_data.replace(u'\u3000', '').strip().split('\t')
+        person_id = sample_list[7].strip()
         
-load_insurance()
+        if person_id not in samples_dict and re.match('^[A-Z][12][0-9]{8}$', person_id):
+            samples_dict[person_id] = sample_list
+    
+        all_samples.append(sample_list)
+    return samples_dict
 
-
+# load_monthly_employee()
+# load_insurance()
+data_calssify()
     
