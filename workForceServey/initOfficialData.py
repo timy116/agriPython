@@ -6,15 +6,16 @@ Created on 2018年6月29日
 import xlrd
 import re
 
-monthlyEmployee_dict = {}
+monthly_employee_dict = {}
 insurance_data = {}
 all_samples = []
+households = {}
 
 def load_monthly_employee():
     for line in open('..\\..\\input\\106_MonthlyEmployee.txt', 'r', encoding = 'utf-8', errors = 'ignore'):
         sample_lsit = line.strip().split('\t')
         farm_id = sample_lsit[0].strip()
-        monthlyEmployee_dict[farm_id] = sample_lsit
+        monthly_employee_dict[farm_id] = sample_lsit
 
 def load_insurance():
     wb = xlrd.open_workbook('..\\..\\input\\insurance.xlsx')
@@ -92,9 +93,29 @@ def add_insurance(k, v, i):
         insurance_data[k] = value_list
 
 def data_calssify():
+    #有效身分證之樣本
     samples_dict = load_samples()
     
+    #樣本與戶籍對照 dict
+    #key: 樣本之身分證字號, value: 樣本之戶號
+    comparison_dict = {}
     
+    for coa_data in open('..\\..\\input\\coa_d03_10611.txt', 'r', encoding = 'utf-8', errors = 'ignore'):
+        person_info = coa_data.strip().split(',')
+        
+        #以戶號判斷是否存在, 存在則新增資料, 否則新增一戶
+        if person_info[4] in households:
+            if not person_info[11] == 1 and person_info[12].strip() == '':
+                households.get(person_info[4]).append(person_info)
+        else:
+            person = []
+            person.append(person_info)
+            households[person_info[4]] = person
+        
+        #樣本身份證對應到戶籍資料就存到對照 dict
+        if samples_dict.get(person_info[1]) == None:
+            comparison_dict[person_info[1]] = person_info[4]
+            
 def load_samples():
     samples_dict ={}
     
@@ -111,4 +132,3 @@ def load_samples():
 # load_monthly_employee()
 # load_insurance()
 data_calssify()
-    
