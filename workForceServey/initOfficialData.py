@@ -113,9 +113,11 @@ def data_calssify():
             households[person_info[4]] = person
         
         #樣本身份證對應到戶籍資料就存到對照 dict
-        if samples_dict.get(person_info[1]) == None:
+        if samples_dict.get(person_info[1]) != None:
             comparison_dict[person_info[1]] = person_info[4]
             
+    build_official_data(comparison_dict)
+    
 def load_samples():
     samples_dict ={}
     
@@ -128,6 +130,9 @@ def load_samples():
     
         all_samples.append(sample_list)
     return samples_dict
+
+def build_official_data(comparison_dict):
+    ...
 
 # load_monthly_employee()
 # load_insurance()
