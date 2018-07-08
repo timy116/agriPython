@@ -12,10 +12,8 @@ all_samples = []
 households = {}
 
 def load_monthly_employee():
-    for line in open('..\\..\\input\\106_MonthlyEmployee.txt', 'r', encoding = 'utf-8', errors = 'ignore'):
-        sample_lsit = line.strip().split('\t')
-        farm_id = sample_lsit[0].strip()
-        monthly_employee_dict[farm_id] = sample_lsit
+    sample_list = [line.strip().split('\t') for line in open('..\\..\\input\\106_MonthlyEmployee.txt', 'r', encoding='utf8')]
+    global monthly_employee_dict; monthly_employee_dict = {sample[0].strip() : sample for sample in sample_list} #Key is farmer id
 
 def load_insurance():
     wb = xlrd.open_workbook('..\\..\\input\\insurance.xlsx')
@@ -100,7 +98,7 @@ def data_calssify():
     #key: 樣本之身分證字號, value: 樣本之戶號
     comparison_dict = {}
     
-    for coa_data in open('..\\..\\input\\coa_d03_10611.txt', 'r', encoding = 'utf-8', errors = 'ignore'):
+    for coa_data in open('..\\..\\input\\coa_d03_10611.txt', 'r', encoding='utf8'):
         person_info = coa_data.strip().split(',')
         
         #以戶號判斷是否存在, 存在則新增資料, 否則新增一戶
@@ -119,16 +117,10 @@ def data_calssify():
     build_official_data(comparison_dict)
     
 def load_samples():
-    samples_dict ={}
-    
-    for sample_data in open('..\\..\\input\\sample.txt', 'r', encoding = 'utf-8', errors = 'ignore'):
-        sample_list = sample_data.replace(u'\u3000', '').strip().split('\t')
-        person_id = sample_list[7].strip()
-        
-        if person_id not in samples_dict and re.match('^[A-Z][12][0-9]{8}$', person_id):
-            samples_dict[person_id] = sample_list
-    
-        all_samples.append(sample_list)
+    global all_samples
+    all_samples = [l.replace(u'\u3000', '').strip().split('\t') for l in open('..\\..\\input\\sample.txt', 'r', encoding='utf8')]
+    samples_dict = {}
+    samples_dict = {l[7].strip():l for l in all_samples if l[7].strip() not in samples_dict and re.match('^[A-Z][12][0-9]{8}$', l[7].strip())}
     return samples_dict
 
 def build_official_data(comparison_dict):
