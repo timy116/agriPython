@@ -16,3 +16,4 @@ conn.close()
 
 for row in rows:
     print(row)
+
